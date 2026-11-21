@@ -1,0 +1,23 @@
+Complete the Cypher query to find the year that Kevin Bacon was born.
+
+MATCH (p:Person {name: "Kevin Bacon"})
+RETURN p.born
+
+----------------------------
+-- finding relationship 
+----------------------------
+MATCH (p:person)-[:ACTED_IN]->(m:movies)
+WHERE p.name = 'Tom Hanks'
+RETURN p, m
+
+-- 
+MATCH (p:person {name: 'Tom Hanks'})-[:ACTED_IN]->(m:movies)
+WHERE m.title
+
+-- 
+MATCH (m:Movie)<-[:ACTED_IN]-(p:Person)
+RETURN m.title, p.name
+
+----------------------------
+--Traversing Relationships
+----------------------------
