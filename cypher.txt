@@ -21,3 +21,72 @@ RETURN m.title, p.name
 ----------------------------
 --Traversing Relationships
 ----------------------------
+-- Who directed the movie Cloud Atlas?
+
+MATCH (m:Movie {title: "Cloud Atlas"})<-[:DIRECTED]-(p:Person)
+RETURN p.name
+
+-- Which movie has Emil Eifrem acted in?
+MATCH (p:Person {name:'Emil Eifrem'})-[:ACTED_IN]->(m:Movie)
+RETURN m.title
+
+--------------------------------
+-- Filtering Queries
+--------------------------------
+MATCH (m:Movie)
+WHERE m.released IN [2000, 2002, 2004, 2006, 2008]
+RETURN m.title
+
+MATCH (p:Person)-[:ACTED_IN]->(m:Movie)
+WHERE p.born > 1960 and m.title = 'As Good as It Gets'
+RETURN p.name
+
+-------------------------------------------------------------
+-- create node and relationship
+--------------------------------
+MERGE and CREATE both commands used to create the Node. Merge does not duplicate if exists, but create create duplicate if already exists. hence MERGE is used as a best proactice.
+
+MERGE (p: Person {name: 'Tom Hanks}). <- No duplicate will create, best proactice
+CREATE (p: Person {name: 'Tom Hanks}) <- create duplicates if exists. Not a good practice.
+
+-- create relationship
+MERGE (a)-[:LIKES]->(b)
+MERGE (a)-[:LIKES]- (b) <= By default relationship from left to right unless specified.
+
+MERGE (p:Person {name: 'Lucille Ball'})
+-[:ACTED_IN]->
+(m:Movie {title: 'Mame'})
+RETURN p, m
+-------------------------------------------------------------------
+-- update property
+--------------------------------
+MATCH (m:Movie {title: 'Get Out'})
+SET m.tagline = 'Gripping, scary, witty and timely!',
+m.released=2017
+RETURN m.title, m.tagline, m.released
+
+MATCH (p:Person {name: 'Robin Williams'})
+ON MATCH
+SET p.died = 2014
+RETURN p
+
+MERGE (p:Person {name: 'McKenna Grace'})
+ON CREATE SET p.createdAt = datetime()
+ON MATCH SET p.updatedAt = datetime()
+SET p.born = 2006
+RETURN p
+
+MERGE (m:Movie {title: 'Rocketman'})
+ON CREATE SET m.createdAt = datetime()
+ON MATCH SET m.updatedAt = datetime()
+SET m.tagline = "The Only Way to Tell His Story is to live His Fantasy.",
+    m.released = 2019
+RETURN m
+
+
+-- remove relationship and delete
+MATCH (p:Person {name: 'River Phoenix'})
+`DETACH DELETE p`
+
+-- deletes all nodes and relationships from the graph?
+MATCH (n) DETACH DELETE n
